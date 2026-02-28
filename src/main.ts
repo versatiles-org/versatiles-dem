@@ -17,7 +17,7 @@ const PER_SOURCE_STEPS: { name: StepName; run: (source: SourceConfig) => Promise
 	{ name: 'backup', run: stepBackup },
 ];
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
 	const args = parseCliArgs();
 
 	console.log('Verifying system dependencies...');
@@ -57,7 +57,10 @@ async function main(): Promise<void> {
 	}
 }
 
-main().catch(err => {
-	console.error(err);
-	process.exit(1);
-});
+const isEntry = process.argv[1]?.endsWith('main.ts');
+if (isEntry) {
+	main().catch(err => {
+		console.error(err);
+		process.exit(1);
+	});
+}
