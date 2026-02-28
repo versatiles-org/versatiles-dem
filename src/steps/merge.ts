@@ -1,7 +1,7 @@
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { DATA_DIR, mergedVersatilesPath, sourceVersatilesPath } from '../config.js';
-import { run } from '../lib/command.js';
+import { runWithOutput } from '../lib/command.js';
 import type { SourceConfig } from '../lib/source.js';
 import { mkdir } from 'node:fs/promises';
 
@@ -27,7 +27,7 @@ export async function stepMerge(sources: SourceConfig[]): Promise<void> {
 	await writeFile(pipelinePath, pipelineContent);
 
 	console.log(`Merging ${inputPaths.length} sources into ${outputPath}`);
-	await run('versatiles', ['convert', pipelinePath, outputPath]);
+	await runWithOutput('versatiles', ['convert', pipelinePath, outputPath]);
 
 	console.log(`Merge complete: ${outputPath}`);
 }

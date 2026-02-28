@@ -17,11 +17,11 @@ vi.mock('../config.js', () => ({
 }));
 
 vi.mock('../lib/command.js', () => ({
-	run: vi.fn(async () => ''),
+	runWithOutput: vi.fn(async () => undefined),
 }));
 
 import { stepMerge } from './merge.js';
-import { run } from '../lib/command.js';
+import { runWithOutput } from '../lib/command.js';
 
 const makeSource = (slug: string): SourceConfig => ({
 	name: `Source ${slug}`,
@@ -61,7 +61,7 @@ describe('stepMerge', () => {
 		const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 		await stepMerge([makeSource('source-a')]);
 
-		expect(run).not.toHaveBeenCalled();
+		expect(runWithOutput).not.toHaveBeenCalled();
 		expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('skipping merge'));
 		logSpy.mockRestore();
 	});
@@ -76,7 +76,7 @@ describe('stepMerge', () => {
 		expect(pipelineContent).toContain('glo90.versatiles');
 		expect(pipelineContent).toContain('meta_update schema="dem/terrarium"');
 
-		expect(run).toHaveBeenCalledWith('versatiles', [
+		expect(runWithOutput).toHaveBeenCalledWith('versatiles', [
 			'convert',
 			join(tempDir, 'merge.vpl'),
 			join(tempDir, 'dem.versatiles'),

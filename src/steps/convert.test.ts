@@ -4,10 +4,10 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 
 vi.mock('../lib/command.js', () => ({
-	run: vi.fn(async () => ''),
+	runWithOutput: vi.fn(async () => undefined),
 }));
 
-import { run } from '../lib/command.js';
+import { runWithOutput } from '../lib/command.js';
 import type { SourceConfig } from '../lib/source.js';
 
 const makeSource = (): SourceConfig => ({
@@ -54,7 +54,7 @@ describe('stepConvert', () => {
 		expect(pipelineContent).toContain('dem_quantize');
 		expect(pipelineContent).toContain('meta_update schema="dem/terrarium"');
 
-		expect(run).toHaveBeenCalledWith('versatiles', [
+		expect(runWithOutput).toHaveBeenCalledWith('versatiles', [
 			'convert',
 			join(tempDir, 'test-source', 'pipeline.vpl'),
 			join(tempDir, 'test-source', 'test-source.versatiles'),

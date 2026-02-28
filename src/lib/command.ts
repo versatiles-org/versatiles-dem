@@ -1,4 +1,4 @@
-import { execFile as execFileCb } from 'node:child_process';
+import { execFile as execFileCb, spawn } from 'node:child_process';
 import { promisify } from 'node:util';
 import { which } from './which.js';
 
@@ -10,6 +10,20 @@ export async function run(command: string, args: string[], options?: { cwd?: str
 		cwd: options?.cwd,
 	});
 	return stdout;
+}
+
+export async function runWithOutput(command: string, args: string[], options?: { cwd?: string }): Promise<void> {
+	return new Promise((resolve, reject) => {
+		const child = spawn(command, args, {
+			cwd: options?.cwd,
+			stdio: 'inherit',
+		});
+		child.on('error', reject);
+		child.on('close', (code) => {
+			if (code === 0) resolve();
+			else reject(new Error(`${command} exited with code ${code}`));
+		});
+	});
 }
 
 export async function verifyDependencies(commands: string[]): Promise<void> {

@@ -1,7 +1,7 @@
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { sourceDataDir, sourceVrtPath, sourceVersatilesPath } from '../config.js';
-import { run } from '../lib/command.js';
+import { runWithOutput } from '../lib/command.js';
 import type { SourceConfig } from '../lib/source.js';
 
 export async function stepConvert(source: SourceConfig): Promise<void> {
@@ -15,7 +15,7 @@ export async function stepConvert(source: SourceConfig): Promise<void> {
 	await writeFile(pipelinePath, pipelineContent);
 
 	console.log(`Converting to .versatiles: ${outputPath}`);
-	await run('versatiles', ['convert', pipelinePath, outputPath]);
+	await runWithOutput('versatiles', ['convert', pipelinePath, outputPath]);
 
 	console.log(`Conversion complete: ${outputPath}`);
 }
