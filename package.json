@@ -1,0 +1,19 @@
+{
+  "name": "versatiles-dem",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/main.ts",
+    "upgrade": "npm-check-updates -u && rm -rf node_modules package-lock.json && npm install"
+  },
+  "dependencies": {
+    "yaml": "^2.8.2"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.2",
+    "npm-check-updates": "^19.6.3",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
