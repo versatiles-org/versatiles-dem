@@ -1,7 +1,7 @@
 import { parseArgs } from 'node:util';
 
 const VALID_STEPS = ['download', 'check', 'vrt', 'convert', 'backup', 'merge'] as const;
-export type StepName = typeof VALID_STEPS[number];
+export type StepName = (typeof VALID_STEPS)[number];
 
 export interface CliArgs {
 	source?: string;

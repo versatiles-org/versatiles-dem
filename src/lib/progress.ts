@@ -10,7 +10,12 @@ export class Progress {
 	#startTime: number;
 	#now: () => number;
 
-	constructor(total: number, label: string, stream?: { write(s: string): void; isTTY?: boolean; columns?: number }, now?: () => number) {
+	constructor(
+		total: number,
+		label: string,
+		stream?: { write(s: string): void; isTTY?: boolean; columns?: number },
+		now?: () => number,
+	) {
 		this.total = total;
 		this.#label = label;
 		this.#stream = stream ?? process.stderr;

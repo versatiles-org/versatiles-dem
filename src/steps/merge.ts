@@ -8,7 +8,7 @@ import { mkdir } from 'node:fs/promises';
 export async function stepMerge(sources: SourceConfig[]): Promise<void> {
 	await mkdir(DATA_DIR, { recursive: true });
 
-	const inputPaths = sources.map(s => sourceVersatilesPath(s.slug));
+	const inputPaths = sources.map((s) => sourceVersatilesPath(s.slug));
 	const outputPath = mergedVersatilesPath();
 
 	if (inputPaths.length === 0) {
@@ -21,7 +21,7 @@ export async function stepMerge(sources: SourceConfig[]): Promise<void> {
 	}
 
 	const pipelinePath = join(DATA_DIR, 'merge.vpl');
-	const fromEntries = inputPaths.map(p => `from_versatiles filename="${p}"`).join(' ');
+	const fromEntries = inputPaths.map((p) => `from_versatiles filename="${p}"`).join(' ');
 	const pipelineContent = `from_stacked_raster [ ${fromEntries} ] | meta_update schema="dem/terrarium"`;
 
 	await writeFile(pipelinePath, pipelineContent);

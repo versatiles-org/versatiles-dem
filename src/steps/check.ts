@@ -40,7 +40,7 @@ export async function stepCheck(source: SourceConfig): Promise<void> {
 	}
 
 	// Integrity check
-	const tifFiles = files.filter(f => f.endsWith('.tif'));
+	const tifFiles = files.filter((f) => f.endsWith('.tif'));
 	const corrupt: string[] = [];
 	const progress = new Progress(tifFiles.length, 'Checking');
 

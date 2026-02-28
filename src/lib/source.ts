@@ -21,7 +21,7 @@ export interface SourceConfig {
 
 export async function loadSources(sourcesDir: string): Promise<SourceConfig[]> {
 	const files = await readdir(sourcesDir);
-	const yamlFiles = files.filter(f => f.endsWith('.yaml') || f.endsWith('.yml')).sort();
+	const yamlFiles = files.filter((f) => f.endsWith('.yaml') || f.endsWith('.yml')).sort();
 
 	const sources: SourceConfig[] = [];
 	for (const file of yamlFiles) {

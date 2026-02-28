@@ -27,6 +27,8 @@ describe('verifyDependencies', () => {
 	});
 
 	it('throws listing missing commands', async () => {
-		await expect(verifyDependencies(['node', 'missing-cmd'])).rejects.toThrow('Missing system dependencies: missing-cmd');
+		await expect(verifyDependencies(['node', 'missing-cmd'])).rejects.toThrow(
+			'Missing system dependencies: missing-cmd',
+		);
 	});
 });

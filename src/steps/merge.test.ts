@@ -9,7 +9,9 @@ const mockMergedVersatilesPath = vi.fn();
 const mockSourceVersatilesPath = vi.fn();
 
 vi.mock('../config.js', () => ({
-	get DATA_DIR() { return mockDataDir(); },
+	get DATA_DIR() {
+		return mockDataDir();
+	},
 	mergedVersatilesPath: (...args: unknown[]) => mockMergedVersatilesPath(...args),
 	sourceVersatilesPath: (...args: unknown[]) => mockSourceVersatilesPath(...args),
 }));

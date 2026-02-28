@@ -10,7 +10,7 @@ export async function stepVrt(source: SourceConfig): Promise<void> {
 	const vrtPath = sourceVrtPath(source.slug);
 
 	const files = await readdir(tilesDir);
-	const tifFiles = files.filter(f => f.endsWith('.tif')).sort();
+	const tifFiles = files.filter((f) => f.endsWith('.tif')).sort();
 
 	if (tifFiles.length === 0) {
 		throw new Error(`No .tif files found in ${tilesDir}`);
@@ -19,7 +19,7 @@ export async function stepVrt(source: SourceConfig): Promise<void> {
 	console.log(`Building VRT from ${tifFiles.length} tiles...`);
 
 	const fileListPath = join(dataDir, 'filelist.txt');
-	const fileListContent = tifFiles.map(f => join(tilesDir, f)).join('\n');
+	const fileListContent = tifFiles.map((f) => join(tilesDir, f)).join('\n');
 	await writeFile(fileListPath, fileListContent);
 
 	await run('gdalbuildvrt', ['-input_file_list', fileListPath, vrtPath]);

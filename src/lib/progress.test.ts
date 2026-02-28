@@ -4,7 +4,12 @@ import { Progress } from './progress.js';
 function makeTTYStream() {
 	const chunks: string[] = [];
 	return {
-		stream: { write: (s: string) => { chunks.push(s); }, isTTY: true as const },
+		stream: {
+			write: (s: string) => {
+				chunks.push(s);
+			},
+			isTTY: true as const,
+		},
 		chunks,
 	};
 }
@@ -12,7 +17,12 @@ function makeTTYStream() {
 function makeNonTTYStream() {
 	const chunks: string[] = [];
 	return {
-		stream: { write: (s: string) => { chunks.push(s); }, isTTY: false as const },
+		stream: {
+			write: (s: string) => {
+				chunks.push(s);
+			},
+			isTTY: false as const,
+		},
 		chunks,
 	};
 }
@@ -21,7 +31,9 @@ function makeClock(startMs = 0) {
 	let time = startMs;
 	return {
 		now: () => time,
-		advance: (ms: number) => { time += ms; },
+		advance: (ms: number) => {
+			time += ms;
+		},
 	};
 }
 
@@ -130,7 +142,7 @@ describe('Progress ETA', () => {
 		const p = new Progress(10, 'X', stream, clock.now);
 
 		clock.advance(5000); // 5s elapsed
-		p.increment(5);      // 50% done, rate=1/s, 5 remaining -> ETA 5s
+		p.increment(5); // 50% done, rate=1/s, 5 remaining -> ETA 5s
 		expect(chunks.at(-1)).toContain('ETA 5s');
 	});
 
@@ -140,7 +152,7 @@ describe('Progress ETA', () => {
 		const p = new Progress(100, 'X', stream, clock.now);
 
 		clock.advance(10000); // 10s elapsed
-		p.increment(1);       // 1% done, rate=0.1/s, 99 remaining -> 990s -> 16m30s
+		p.increment(1); // 1% done, rate=0.1/s, 99 remaining -> 990s -> 16m30s
 		expect(chunks.at(-1)).toContain('ETA 16m30s');
 	});
 
@@ -150,7 +162,7 @@ describe('Progress ETA', () => {
 		const p = new Progress(1000, 'X', stream, clock.now);
 
 		clock.advance(60000); // 60s elapsed
-		p.increment(10);      // 1% done, rate=10/60s, 990 remaining -> 5940s -> 1h39m
+		p.increment(10); // 1% done, rate=10/60s, 990 remaining -> 5940s -> 1h39m
 		expect(chunks.at(-1)).toContain('ETA 1h39m');
 	});
 

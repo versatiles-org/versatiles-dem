@@ -16,7 +16,9 @@ describe('loadSources', () => {
 	});
 
 	it('loads YAML files from directory', async () => {
-		await writeFile(join(tempDir, 'test.yaml'), `
+		await writeFile(
+			join(tempDir, 'test.yaml'),
+			`
 name: Test Source
 slug: test-source
 license: MIT
@@ -28,7 +30,8 @@ config:
   region: eu-central-1
   tileListUrl: https://example.com/tileList.txt
   tileUrlPattern: https://example.com/{name}/{name}.tif
-`);
+`,
+		);
 
 		const sources = await loadSources(tempDir);
 		expect(sources).toHaveLength(1);
@@ -38,8 +41,14 @@ config:
 	});
 
 	it('loads multiple files sorted by name', async () => {
-		await writeFile(join(tempDir, 'b.yaml'), 'name: B\nslug: b\nlicense: MIT\nurl: x\ndate: "2024"\ntype: t\nconfig: {}');
-		await writeFile(join(tempDir, 'a.yaml'), 'name: A\nslug: a\nlicense: MIT\nurl: x\ndate: "2024"\ntype: t\nconfig: {}');
+		await writeFile(
+			join(tempDir, 'b.yaml'),
+			'name: B\nslug: b\nlicense: MIT\nurl: x\ndate: "2024"\ntype: t\nconfig: {}',
+		);
+		await writeFile(
+			join(tempDir, 'a.yaml'),
+			'name: A\nslug: a\nlicense: MIT\nurl: x\ndate: "2024"\ntype: t\nconfig: {}',
+		);
 
 		const sources = await loadSources(tempDir);
 		expect(sources).toHaveLength(2);
@@ -49,7 +58,10 @@ config:
 
 	it('ignores non-YAML files', async () => {
 		await writeFile(join(tempDir, 'readme.txt'), 'not yaml');
-		await writeFile(join(tempDir, 'source.yaml'), 'name: X\nslug: x\nlicense: MIT\nurl: x\ndate: "2024"\ntype: t\nconfig: {}');
+		await writeFile(
+			join(tempDir, 'source.yaml'),
+			'name: X\nslug: x\nlicense: MIT\nurl: x\ndate: "2024"\ntype: t\nconfig: {}',
+		);
 
 		const sources = await loadSources(tempDir);
 		expect(sources).toHaveLength(1);
@@ -61,7 +73,10 @@ config:
 	});
 
 	it('supports .yml extension', async () => {
-		await writeFile(join(tempDir, 'source.yml'), 'name: Y\nslug: y\nlicense: MIT\nurl: x\ndate: "2024"\ntype: t\nconfig: {}');
+		await writeFile(
+			join(tempDir, 'source.yml'),
+			'name: Y\nslug: y\nlicense: MIT\nurl: x\ndate: "2024"\ntype: t\nconfig: {}',
+		);
 
 		const sources = await loadSources(tempDir);
 		expect(sources).toHaveLength(1);

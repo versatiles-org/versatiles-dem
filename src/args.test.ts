@@ -51,7 +51,9 @@ describe('parseCliArgs', () => {
 
 	it('exits on --help', () => {
 		process.argv = ['node', 'main.ts', '--help'];
-		const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => { throw new Error('exit'); });
+		const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => {
+			throw new Error('exit');
+		});
 		const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 		expect(() => parseCliArgs()).toThrow('exit');
 		expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Usage:'));

@@ -13,10 +13,19 @@ vi.mock('../config.js', () => ({
 }));
 
 vi.mock('./progress.js', () => ({
-	Progress: class { increment() {} finish() {} },
+	Progress: class {
+		increment() {}
+		finish() {}
+	},
 }));
 
-import { parseTileList, loadCachedTileList, fetchTileList, downloadCopernicusTiles, retryConfig } from './copernicus.js';
+import {
+	parseTileList,
+	loadCachedTileList,
+	fetchTileList,
+	downloadCopernicusTiles,
+	retryConfig,
+} from './copernicus.js';
 
 describe('parseTileList', () => {
 	it('parses newline-separated tile names', () => {
@@ -109,11 +118,14 @@ describe('fetchTileList', () => {
 	it('throws on non-ok response', async () => {
 		await mkdir(join(tempDir, 'test-slug'), { recursive: true });
 
-		vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-			ok: false,
-			status: 404,
-			statusText: 'Not Found',
-		}));
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: false,
+				status: 404,
+				statusText: 'Not Found',
+			}),
+		);
 
 		const config: CopernicusS3Config = {
 			bucket: 'test-bucket',
@@ -292,7 +304,7 @@ describe('downloadCopernicusTiles', () => {
 			if (opts?.method === 'HEAD') {
 				return {
 					ok: true,
-					headers: { get: (key: string) => key === 'content-length' ? String(newContent.length) : null },
+					headers: { get: (key: string) => (key === 'content-length' ? String(newContent.length) : null) },
 				};
 			}
 			return {
@@ -375,7 +387,7 @@ describe('downloadCopernicusTiles', () => {
 			if (opts?.method === 'HEAD') {
 				return {
 					ok: true,
-					headers: { get: (key: string) => key === 'content-length' ? String(tileContent.length) : null },
+					headers: { get: (key: string) => (key === 'content-length' ? String(tileContent.length) : null) },
 				};
 			}
 			throw new Error('Should not download existing tile');

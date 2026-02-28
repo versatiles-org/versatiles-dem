@@ -31,8 +31,8 @@ export async function fetchTileList(slug: string, config: CopernicusS3Config): P
 export function parseTileList(text: string): string[] {
 	return text
 		.split('\n')
-		.map(line => line.trim().replace(/\/$/, ''))
-		.filter(line => line.length > 0);
+		.map((line) => line.trim().replace(/\/$/, ''))
+		.filter((line) => line.length > 0);
 }
 
 export async function loadCachedTileList(slug: string): Promise<string[] | null> {
@@ -90,7 +90,7 @@ async function downloadWithRetry(url: string, destPath: string, retries: number 
 		} catch (err: unknown) {
 			if (attempt === retries) throw err;
 			console.warn(`  Retry ${attempt}/${retries} for ${url}: ${String(err)}`);
-			await new Promise(resolve => setTimeout(resolve, retryConfig.delayMs * attempt));
+			await new Promise((resolve) => setTimeout(resolve, retryConfig.delayMs * attempt));
 		}
 	}
 }

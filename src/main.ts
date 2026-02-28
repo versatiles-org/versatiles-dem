@@ -27,7 +27,7 @@ export async function main(): Promise<void> {
 	let sources = await loadSources(SOURCES_DIR);
 
 	if (args.source) {
-		sources = sources.filter(s => s.slug === args.source);
+		sources = sources.filter((s) => s.slug === args.source);
 		if (sources.length === 0) {
 			throw new Error(`Source "${args.source}" not found`);
 		}
@@ -41,9 +41,7 @@ export async function main(): Promise<void> {
 	for (const source of sources) {
 		console.log(`\n=== Processing: ${source.name} ===`);
 
-		const steps = args.step
-			? PER_SOURCE_STEPS.filter(s => s.name === args.step)
-			: PER_SOURCE_STEPS;
+		const steps = args.step ? PER_SOURCE_STEPS.filter((s) => s.name === args.step) : PER_SOURCE_STEPS;
 
 		for (const step of steps) {
 			console.log(`\n--- Step: ${step.name} ---`);
