@@ -5,6 +5,9 @@
   "type": "module",
   "scripts": {
     "start": "tsx src/main.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "upgrade": "npm-check-updates -u && rm -rf node_modules package-lock.json && npm install"
   },
   "dependencies": {
