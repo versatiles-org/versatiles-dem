@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "check": "npm run check:types && npm run test",
+    "check:types": "tsc --noEmit",
     "start": "tsx src/main.ts",
     "test": "vitest run",
     "test:watch": "vitest",
