@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { Progress } from './progress.js';
 
 function makeTTYStream() {
@@ -14,6 +14,14 @@ function makeNonTTYStream() {
 	return {
 		stream: { write: (s: string) => { chunks.push(s); }, isTTY: false as const },
 		chunks,
+	};
+}
+
+function makeClock(startMs = 0) {
+	let time = startMs;
+	return {
+		now: () => time,
+		advance: (ms: number) => { time += ms; },
 	};
 }
 
@@ -60,7 +68,6 @@ describe('Progress', () => {
 		const { stream, chunks } = makeTTYStream();
 		const p = new Progress(1, 'X', stream);
 		p.finish('Done!');
-		// Last two writes: clear line + message
 		expect(chunks.at(-1)).toBe('Done!\n');
 		expect(chunks.at(-2)).toMatch(/^\r\s+\r$/);
 	});
@@ -102,5 +109,62 @@ describe('Progress', () => {
 		p.increment(3);
 		expect(chunks.at(-1)).toContain('100%');
 		expect(chunks.at(-1)).toContain('3/3');
+	});
+});
+
+describe('Progress ETA', () => {
+	it('shows no ETA at 0% or 100%', () => {
+		const { stream, chunks } = makeTTYStream();
+		const clock = makeClock();
+		const p = new Progress(10, 'X', stream, clock.now);
+		expect(chunks.at(-1)).not.toContain('ETA');
+
+		clock.advance(10000);
+		p.increment(10);
+		expect(chunks.at(-1)).not.toContain('ETA');
+	});
+
+	it('shows ETA in seconds', () => {
+		const { stream, chunks } = makeTTYStream();
+		const clock = makeClock();
+		const p = new Progress(10, 'X', stream, clock.now);
+
+		clock.advance(5000); // 5s elapsed
+		p.increment(5);      // 50% done, rate=1/s, 5 remaining -> ETA 5s
+		expect(chunks.at(-1)).toContain('ETA 5s');
+	});
+
+	it('shows ETA in minutes and seconds', () => {
+		const { stream, chunks } = makeTTYStream();
+		const clock = makeClock();
+		const p = new Progress(100, 'X', stream, clock.now);
+
+		clock.advance(10000); // 10s elapsed
+		p.increment(1);       // 1% done, rate=0.1/s, 99 remaining -> 990s -> 16m30s
+		expect(chunks.at(-1)).toContain('ETA 16m30s');
+	});
+
+	it('shows ETA in hours and minutes', () => {
+		const { stream, chunks } = makeTTYStream();
+		const clock = makeClock();
+		const p = new Progress(1000, 'X', stream, clock.now);
+
+		clock.advance(60000); // 60s elapsed
+		p.increment(10);      // 1% done, rate=10/60s, 990 remaining -> 5940s -> 1h39m
+		expect(chunks.at(-1)).toContain('ETA 1h39m');
+	});
+
+	it('updates ETA as progress advances', () => {
+		const { stream, chunks } = makeTTYStream();
+		const clock = makeClock();
+		const p = new Progress(100, 'X', stream, clock.now);
+
+		clock.advance(10000);
+		p.increment(50); // rate=5/s, 50 remaining -> 10s
+		expect(chunks.at(-1)).toContain('ETA 10s');
+
+		clock.advance(5000);
+		p.increment(25); // 75 done in 15s, rate=5/s, 25 remaining -> 5s
+		expect(chunks.at(-1)).toContain('ETA 5s');
 	});
 });
