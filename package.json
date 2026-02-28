@@ -12,8 +12,10 @@
   },
   "devDependencies": {
     "@types/node": "^25.3.2",
+    "@vitest/coverage-v8": "^4.0.18",
     "npm-check-updates": "^19.6.3",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   }
 }
