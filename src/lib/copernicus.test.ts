@@ -12,6 +12,10 @@ vi.mock('../config.js', () => ({
 	sourceTileListPath: (...args: unknown[]) => mockSourceTileListPath(...args),
 }));
 
+vi.mock('./progress.js', () => ({
+	Progress: class { increment() {} finish() {} },
+}));
+
 import { parseTileList, loadCachedTileList, fetchTileList, downloadCopernicusTiles, retryConfig } from './copernicus.js';
 
 describe('parseTileList', () => {

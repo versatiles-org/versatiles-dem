@@ -20,6 +20,10 @@ vi.mock('../lib/command.js', () => ({
 	run: vi.fn(),
 }));
 
+vi.mock('../lib/progress.js', () => ({
+	Progress: class { increment() {} finish() {} },
+}));
+
 import { stepCheck } from './check.js';
 import { readdir } from 'node:fs/promises';
 import { loadCachedTileList } from '../lib/copernicus.js';
