@@ -20,24 +20,24 @@ npm install
 
 ```bash
 # Run the full pipeline for all sources
-npm start
+./dem
 
 # Process a single source
-npm start -- --source copernicus-dem-glo30
-npm start -- --source copernicus-dem-glo90
+./dem --source copernicus-dem-glo30
+./dem --source copernicus-dem-glo90
 
 # Run a specific step for all sources
-npm start -- --step download
-npm start -- --step check
+./dem --step download
+./dem --step check
 
 # Combine both flags
-npm start -- --source copernicus-dem-glo90 --step download
+./dem --source copernicus-dem-glo90 --step download
 
 # Run the merge step (combines all sources into one file)
-npm start -- --step merge
+./dem --step merge
 
 # Show help
-npm start -- --help
+./dem --help
 ```
 
 ## Pipeline Steps
