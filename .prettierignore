@@ -1,0 +1,6 @@
+.claude/
+*.json
+coverage/
+data/
+dist/
+node_modules/
