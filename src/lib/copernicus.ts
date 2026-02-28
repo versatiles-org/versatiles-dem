@@ -9,7 +9,8 @@ import { writeFile, readFile } from 'node:fs/promises';
 
 const MAX_CONCURRENT = 8;
 const MAX_RETRIES = 3;
-const RETRY_DELAY_MS = 2000;
+
+export const retryConfig = { delayMs: 2000 };
 
 export async function fetchTileList(slug: string, config: CopernicusS3Config): Promise<string[]> {
 	const tileListPath = sourceTileListPath(slug);
@@ -87,7 +88,7 @@ async function downloadWithRetry(url: string, destPath: string, retries: number 
 		} catch (err) {
 			if (attempt === retries) throw err;
 			console.warn(`  Retry ${attempt}/${retries} for ${url}: ${err}`);
-			await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS * attempt));
+			await new Promise(resolve => setTimeout(resolve, retryConfig.delayMs * attempt));
 		}
 	}
 }

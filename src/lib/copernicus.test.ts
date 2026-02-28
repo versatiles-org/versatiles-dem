@@ -12,7 +12,7 @@ vi.mock('../config.js', () => ({
 	sourceTileListPath: (...args: unknown[]) => mockSourceTileListPath(...args),
 }));
 
-import { parseTileList, loadCachedTileList, fetchTileList, downloadCopernicusTiles } from './copernicus.js';
+import { parseTileList, loadCachedTileList, fetchTileList, downloadCopernicusTiles, retryConfig } from './copernicus.js';
 
 describe('parseTileList', () => {
 	it('parses newline-separated tile names', () => {
@@ -127,12 +127,14 @@ describe('downloadCopernicusTiles', () => {
 	let tempDir: string;
 
 	beforeEach(async () => {
+		retryConfig.delayMs = 0;
 		tempDir = await mkdtemp(join(tmpdir(), 'download-test-'));
 		mockSourceTilesDir.mockImplementation((slug: string) => join(tempDir, slug, 'tiles'));
 		mockSourceTileListPath.mockImplementation((slug: string) => join(tempDir, slug, 'tileList.txt'));
 	});
 
 	afterEach(async () => {
+		retryConfig.delayMs = 2000;
 		await rm(tempDir, { recursive: true });
 		vi.restoreAllMocks();
 		vi.unstubAllGlobals();
@@ -200,7 +202,7 @@ describe('downloadCopernicusTiles', () => {
 		};
 
 		await expect(downloadCopernicusTiles('test-slug', config)).rejects.toThrow('No response body');
-	}, 20000);
+	});
 
 	it('throws when download response is not ok', async () => {
 		await mkdir(join(tempDir, 'test-slug', 'tiles'), { recursive: true });
@@ -225,7 +227,7 @@ describe('downloadCopernicusTiles', () => {
 		};
 
 		await expect(downloadCopernicusTiles('test-slug', config)).rejects.toThrow('Download failed: 500 Server Error');
-	}, 20000);
+	});
 
 	it('retries on transient failure then succeeds', async () => {
 		await mkdir(join(tempDir, 'test-slug', 'tiles'), { recursive: true });
@@ -269,7 +271,7 @@ describe('downloadCopernicusTiles', () => {
 		const downloaded = await readFile(join(tempDir, 'test-slug', 'tiles', 'tile1.tif'));
 		expect(downloaded.toString()).toBe('retry-data');
 		expect(downloadAttempts).toBeGreaterThanOrEqual(2);
-	}, 20000);
+	});
 
 	it('downloads when file exists but size differs', async () => {
 		const tilesDir = join(tempDir, 'test-slug', 'tiles');
