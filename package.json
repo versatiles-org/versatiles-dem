@@ -16,7 +16,7 @@
     "yaml": "^2.8.2"
   },
   "devDependencies": {
-    "@types/node": "^25.3.2",
+    "@types/node": "^25.3.3",
     "@vitest/coverage-v8": "^4.0.18",
     "npm-check-updates": "^19.6.3",
     "tsx": "^4.21.0",
