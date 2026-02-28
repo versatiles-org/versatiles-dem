@@ -9,7 +9,7 @@ import { stepConvert } from './steps/convert.js';
 import { stepBackup } from './steps/backup.js';
 import { stepMerge } from './steps/merge.js';
 
-const PER_SOURCE_STEPS: { name: StepName; run: (source: SourceConfig) => Promise<void> }[] = [
+const PER_SOURCE_STEPS: { name: StepName; run: (source: SourceConfig) => void | Promise<void> }[] = [
 	{ name: 'download', run: stepDownload },
 	{ name: 'check', run: stepCheck },
 	{ name: 'vrt', run: stepVrt },
@@ -59,7 +59,7 @@ export async function main(): Promise<void> {
 
 const isEntry = process.argv[1]?.endsWith('main.ts');
 if (isEntry) {
-	main().catch(err => {
+	main().catch((err: unknown) => {
 		console.error(err);
 		process.exit(1);
 	});

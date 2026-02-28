@@ -48,11 +48,12 @@ export async function stepCheck(source: SourceConfig): Promise<void> {
 
 	async function worker(): Promise<void> {
 		while (queue.length > 0) {
-			const file = queue.shift()!;
+			const file = queue.shift();
+			if (!file) break;
 			const filePath = join(tilesDir, file);
 			try {
 				const output = await run('gdalinfo', ['-json', filePath]);
-				const info = JSON.parse(output);
+				const info: { bands?: unknown[] } = JSON.parse(output) as { bands?: unknown[] };
 				if (!info.bands || info.bands.length === 0) {
 					corrupt.push(file);
 				}

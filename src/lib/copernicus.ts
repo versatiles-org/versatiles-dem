@@ -65,7 +65,8 @@ async function downloadFile(url: string, destPath: string): Promise<void> {
 	}
 
 	const fileStream = createWriteStream(destPath);
-	await pipeline(Readable.fromWeb(response.body as any), fileStream);
+	// @ts-expect-error Node's Readable.fromWeb types don't match the web ReadableStream
+	await pipeline(Readable.fromWeb(response.body), fileStream);
 }
 
 async function shouldDownload(filePath: string, url: string): Promise<boolean> {
@@ -86,9 +87,9 @@ async function downloadWithRetry(url: string, destPath: string, retries: number 
 		try {
 			await downloadFile(url, destPath);
 			return;
-		} catch (err) {
+		} catch (err: unknown) {
 			if (attempt === retries) throw err;
-			console.warn(`  Retry ${attempt}/${retries} for ${url}: ${err}`);
+			console.warn(`  Retry ${attempt}/${retries} for ${url}: ${String(err)}`);
 			await new Promise(resolve => setTimeout(resolve, retryConfig.delayMs * attempt));
 		}
 	}
@@ -106,7 +107,8 @@ export async function downloadCopernicusTiles(slug: string, config: CopernicusS3
 
 	async function worker(): Promise<void> {
 		while (queue.length > 0) {
-			const name = queue.shift()!;
+			const name = queue.shift();
+			if (!name) break;
 			const url = config.tileUrlPattern.replace(/\{name\}/g, name);
 			const destPath = join(tilesDir, `${name}.tif`);
 

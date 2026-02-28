@@ -18,9 +18,9 @@ const makeSource = (): SourceConfig => ({
 });
 
 describe('stepBackup', () => {
-	it('logs not yet implemented', async () => {
+	it('logs not yet implemented', () => {
 		const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-		await stepBackup(makeSource());
+		stepBackup(makeSource());
 		expect(logSpy).toHaveBeenCalledWith('Backup for Test Source: not yet implemented');
 		logSpy.mockRestore();
 	});
