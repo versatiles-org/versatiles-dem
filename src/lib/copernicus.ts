@@ -6,6 +6,7 @@ import { Readable } from 'node:stream';
 import type { CopernicusS3Config } from './source.js';
 import { sourceTilesDir, sourceTileListPath } from '../config.js';
 import { writeFile, readFile } from 'node:fs/promises';
+import { Progress } from './progress.js';
 
 const MAX_CONCURRENT = 8;
 const MAX_RETRIES = 3;
@@ -98,11 +99,8 @@ export async function downloadCopernicusTiles(slug: string, config: CopernicusS3
 	await mkdir(tilesDir, { recursive: true });
 
 	const tileNames = await fetchTileList(slug, config);
-	console.log(`Found ${tileNames.length} tiles`);
-
-	let completed = 0;
+	const progress = new Progress(tileNames.length, 'Downloading');
 	let skipped = 0;
-	const total = tileNames.length;
 
 	const queue = [...tileNames];
 
@@ -115,23 +113,17 @@ export async function downloadCopernicusTiles(slug: string, config: CopernicusS3
 			const needsDownload = await shouldDownload(destPath, url);
 			if (!needsDownload) {
 				skipped++;
-				completed++;
-				if (completed % 500 === 0) {
-					console.log(`  Progress: ${completed}/${total} (${skipped} skipped)`);
-				}
+				progress.increment();
 				continue;
 			}
 
 			await downloadWithRetry(url, destPath);
-			completed++;
-			if (completed % 100 === 0) {
-				console.log(`  Progress: ${completed}/${total} (${skipped} skipped)`);
-			}
+			progress.increment();
 		}
 	}
 
 	const workers = Array.from({ length: MAX_CONCURRENT }, () => worker());
 	await Promise.all(workers);
 
-	console.log(`Download complete: ${completed} tiles (${skipped} already existed)`);
+	progress.finish(`Downloaded ${progress.completed} tiles (${skipped} skipped)`);
 }

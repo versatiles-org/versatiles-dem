@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { sourceTilesDir } from '../config.js';
 import { loadCachedTileList } from '../lib/copernicus.js';
 import { run } from '../lib/command.js';
+import { Progress } from '../lib/progress.js';
 import type { SourceConfig } from '../lib/source.js';
 
 const MAX_CONCURRENT = 4;
@@ -39,10 +40,9 @@ export async function stepCheck(source: SourceConfig): Promise<void> {
 	}
 
 	// Integrity check
-	console.log('Running integrity checks...');
 	const tifFiles = files.filter(f => f.endsWith('.tif'));
 	const corrupt: string[] = [];
-	let checked = 0;
+	const progress = new Progress(tifFiles.length, 'Checking');
 
 	const queue = [...tifFiles];
 
@@ -59,10 +59,7 @@ export async function stepCheck(source: SourceConfig): Promise<void> {
 			} catch {
 				corrupt.push(file);
 			}
-			checked++;
-			if (checked % 500 === 0) {
-				console.log(`  Checked ${checked}/${tifFiles.length}`);
-			}
+			progress.increment();
 		}
 	}
 
@@ -70,7 +67,7 @@ export async function stepCheck(source: SourceConfig): Promise<void> {
 	await Promise.all(workers);
 
 	if (corrupt.length > 0) {
-		console.error(`Found ${corrupt.length} corrupt tiles:`);
+		progress.finish(`${corrupt.length} corrupt tiles found`);
 		for (const file of corrupt.slice(0, 20)) {
 			console.error(`  ${file}`);
 		}
@@ -78,7 +75,7 @@ export async function stepCheck(source: SourceConfig): Promise<void> {
 			console.error(`  ... and ${corrupt.length - 20} more`);
 		}
 	} else {
-		console.log(`All ${tifFiles.length} tiles passed integrity check.`);
+		progress.finish(`All ${tifFiles.length} tiles passed integrity check.`);
 	}
 
 	if (missing.length > 0 || corrupt.length > 0) {
