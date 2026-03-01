@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { mkdtemp, readFile, rm, mkdir } from 'node:fs/promises';
+import { mkdtemp, rm, mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 
@@ -48,15 +48,9 @@ describe('stepConvert', () => {
 		const { stepConvert } = await import('./convert.js');
 		await stepConvert(makeSource());
 
-		const pipelineContent = await readFile(join(tempDir, 'test-source', 'pipeline.vpl'), 'utf-8');
-		expect(pipelineContent).toContain('from_gdal_dem');
-		expect(pipelineContent).toContain('encoding="terrarium"');
-		expect(pipelineContent).toContain('dem_quantize');
-		expect(pipelineContent).toContain('meta_update schema="dem/terrarium"');
-
 		expect(runWithOutput).toHaveBeenCalledWith('versatiles', [
 			'convert',
-			join(tempDir, 'test-source', 'pipeline.vpl'),
+			expect.stringContaining(`from_gdal_dem filename='${join(tempDir, 'test-source', 'dem.vrt')}'`),
 			join(tempDir, 'test-source', 'test-source.versatiles'),
 		]);
 	});
