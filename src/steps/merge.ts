@@ -16,7 +16,7 @@ export async function stepMerge(sources: SourceConfig[]): Promise<void> {
 	}
 
 	const fromEntries = inputPaths.map((p) => `from_versatiles filename='${p}'`).join(' ');
-	const pipelineContent = `from_stacked_raster [ ${fromEntries} ] | meta_update schema='dem/terrarium'`;
+	const pipelineContent = `from_stacked_raster [ ${fromEntries} ] | dem_quantize encoding=terrarium resolution_ratio=0.002 max_gradient_error=5 | raster_format format=webp quality=100 speed=0`;
 
 	console.log(`Merging ${inputPaths.length} sources into ${outputPath}`);
 	await runWithOutput('versatiles', ['convert', `[,vpl](${pipelineContent})`, outputPath]);
