@@ -10,7 +10,7 @@ export async function stepConvert(source: SourceConfig): Promise<void> {
 	const outputPath = sourceVersatilesPath(source.slug);
 
 	const pipelinePath = join(dataDir, 'pipeline.vpl');
-	const pipelineContent = `from_gdal_dem filename="${vrtPath}" encoding="terrarium"`;
+	const pipelineContent = `from_gdal_dem filename="${vrtPath}" encoding="terrarium" level_max=12`;
 
 	await writeFile(pipelinePath, pipelineContent);
 
