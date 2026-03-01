@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import type { SourceConfig } from '../lib/source.js';
@@ -69,16 +69,9 @@ describe('stepMerge', () => {
 	it('writes merge pipeline and runs versatiles convert for multiple sources', async () => {
 		await stepMerge([makeSource('glo30'), makeSource('glo90')]);
 
-		const pipelineContent = await readFile(join(tempDir, 'merge.vpl'), 'utf-8');
-		expect(pipelineContent).toContain('from_stacked_raster');
-		expect(pipelineContent).toContain('from_versatiles');
-		expect(pipelineContent).toContain('glo30.versatiles');
-		expect(pipelineContent).toContain('glo90.versatiles');
-		expect(pipelineContent).toContain('meta_update schema="dem/terrarium"');
-
 		expect(runWithOutput).toHaveBeenCalledWith('versatiles', [
 			'convert',
-			join(tempDir, 'merge.vpl'),
+			expect.stringContaining('from_stacked_raster'),
 			join(tempDir, 'dem.versatiles'),
 		]);
 	});

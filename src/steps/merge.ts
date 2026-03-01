@@ -1,13 +1,8 @@
-import { writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
-import { DATA_DIR, mergedVersatilesPath, sourceVersatilesPath } from '../config.js';
+import { mergedVersatilesPath, sourceVersatilesPath } from '../config.js';
 import { runWithOutput } from '../lib/command.js';
 import type { SourceConfig } from '../lib/source.js';
-import { mkdir } from 'node:fs/promises';
 
 export async function stepMerge(sources: SourceConfig[]): Promise<void> {
-	await mkdir(DATA_DIR, { recursive: true });
-
 	const inputPaths = sources.map((s) => sourceVersatilesPath(s.slug));
 	const outputPath = mergedVersatilesPath();
 
@@ -20,14 +15,11 @@ export async function stepMerge(sources: SourceConfig[]): Promise<void> {
 		return;
 	}
 
-	const pipelinePath = join(DATA_DIR, 'merge.vpl');
-	const fromEntries = inputPaths.map((p) => `from_versatiles filename="${p}"`).join(' ');
-	const pipelineContent = `from_stacked_raster [ ${fromEntries} ] | meta_update schema="dem/terrarium"`;
-
-	await writeFile(pipelinePath, pipelineContent);
+	const fromEntries = inputPaths.map((p) => `from_versatiles filename='${p}'`).join(' ');
+	const pipelineContent = `from_stacked_raster [ ${fromEntries} ] | meta_update schema='dem/terrarium'`;
 
 	console.log(`Merging ${inputPaths.length} sources into ${outputPath}`);
-	await runWithOutput('versatiles', ['convert', pipelinePath, outputPath]);
+	await runWithOutput('versatiles', ['convert', `[,vpl](${pipelineContent})`, outputPath]);
 
 	console.log(`Merge complete: ${outputPath}`);
 }
