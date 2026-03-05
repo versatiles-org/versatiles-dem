@@ -16,6 +16,7 @@ export interface SourceConfig {
 	url: string;
 	date: string;
 	type: string;
+	disabled?: boolean;
 	config: CopernicusS3Config;
 }
 
@@ -26,7 +27,8 @@ export async function loadSources(sourcesDir: string): Promise<SourceConfig[]> {
 	const sources: SourceConfig[] = [];
 	for (const file of yamlFiles) {
 		const content = await readFile(join(sourcesDir, file), 'utf-8');
-		sources.push(parseYaml(content) as SourceConfig);
+		const source = parseYaml(content) as SourceConfig;
+		if (!source.disabled) sources.push(source);
 	}
 	return sources;
 }
